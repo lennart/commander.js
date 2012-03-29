@@ -14,6 +14,8 @@ program
 var envValue = "";
 var cmdValue = "";
 var customHelp = false;
+var environments = [];
+var options = null;
 
 program
   .command('setup [env]')
@@ -36,6 +38,14 @@ program
     cmdValue = cmd;
   }).on("--help", function(){
     customHelp = true;
+  });
+
+program
+  .command('update <envs>')
+  .description('update given environments')
+  .action(function() {
+   environments = Array.prototype.slice.call(arguments);
+        options = environments.pop();
   });
 
 program
@@ -84,6 +94,10 @@ program.config.should.equal("conf6");
 program.commands[1].exec_mode.should.equal("mode2");
 program.commands[1].target.should.equal("target1");
 cmdValue.should.equal("exec3");
+
+program.parse(['node', 'test', 'update', 'env1', 'env2', 'env3']);
+environments.should.eql(["env1", "env2", "env3"]);
+options.should.be.a('object');
 
 // Make sure we still catch errors with required values for options
 var exceptionOccurred = false;
